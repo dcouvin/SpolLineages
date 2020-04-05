@@ -11,6 +11,7 @@ java -version
 ```
 ## Instructions on how to use the program
 Users can use the provided executable [JAR](https://en.wikipedia.org/wiki/JAR_(file_format)) file and run the following commands for:
+
 -help on this software
 ```bash
 java -jar spollineages.jar -h
