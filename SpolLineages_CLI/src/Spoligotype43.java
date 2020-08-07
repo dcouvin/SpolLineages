@@ -7,7 +7,7 @@ import java.util.HashMap;
  * #   lineages using classical genotyping methods and updated rules
  * # 
  * #  Copyright (C) 2019 - SpolLineages team
- * #  (Institut Pasteur de la Guadeloupe, Université des Antilles)
+ * #  (Institut Pasteur de la Guadeloupe, Universite des Antilles)
  * #
  * #  See the COPYRIGHT file for details.
  * #

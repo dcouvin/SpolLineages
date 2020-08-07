@@ -59,6 +59,8 @@ public class SpolLineage {
 	    boolean getSIT = false;
 	    boolean countryDistrib = false;
 	    boolean quiet = false;
+	    String pathToDTfiles = "";
+	    String pathToEAfiles = "";
 	    
 		if (args.length == 0)
 	    {
@@ -123,9 +125,18 @@ public class SpolLineage {
 						//--DecisionTree or -D
 						decisionTree = true;
 					}
+					else if (args[i].equals("--pathToDTfiles") || args[i].equals("-pDT")){
+						//--DecisionTree or -D
+						pathToDTfiles = args[i+1];
+					}
+					//--pathToDTfiles or -pDT
 					else if (args[i].equals("--GeneticAlgo") || args[i].equals("-G") || args[i].equals("--EvolutionAlgo")  || args[i].equals("-E")){
 						//--GeneticAlgo or -G
 						geneticAlgo = true;
+					}
+					else if (args[i].equals("--pathToEAfiles") || args[i].equals("-pEA")){
+						//--DecisionTree or -D
+						pathToEAfiles = args[i+1];
 					}
 					else if (args[i].equals("--curatedClade") || args[i].equals("-cur")){
 						//--curatedClade or -cur
@@ -150,8 +161,8 @@ public class SpolLineage {
 					else if (args[i].equals("--all") || args[i].equals("-a")){
 						//--all or -a
 						binaryRules = true;
-						decisionTree = true;
-						geneticAlgo = true;
+						//decisionTree = true;
+						//geneticAlgo = true;
 						curatedSITVIT2 = true;
 						snpBarcodeMatching = true;
 						ruleTB = true;
@@ -167,6 +178,18 @@ public class SpolLineage {
 			
 		}
 	   
+		if(decisionTree == true && pathToDTfiles.equals("") ){
+			System.out.println("The path to Decision Tree files must be specified.");
+			System.out.println("Try 'java -jar spollineages.jar -h' for more information.");
+			System.exit(1);
+		}
+		
+		if(geneticAlgo == true && pathToEAfiles.equals("") ){
+			System.out.println("The path to Evolutionary Algorithm's Binary Mask files must be specified.");
+			System.out.println("Try 'java -jar spollineages.jar -h' for more information.");
+			System.exit(1);
+		}
+		
 	    System.out.println("Output file name is:" +outputFileName);
 	    System.out.println("-----------------------------------------");
 	    
@@ -183,7 +206,7 @@ public class SpolLineage {
 		
 	    
 	    File inputFile = new File(inputFileName);
-	    CSVReader csvReader = new CSVReader(inputFile.getPath(), outputFileName, delimiter, tabBool);
+	    CSVReader csvReader = new CSVReader(inputFile.getPath(), outputFileName, delimiter, tabBool, pathToDTfiles, pathToEAfiles);
 	    
 	    
 	      if (!inputFile.exists())
@@ -229,12 +252,14 @@ public class SpolLineage {
 	      System.out.println("Other options:  --BinaryRules or -B              Option allowing to use SITVIT binary rules to predict lineages from spoligotypes. Default: true");
 	      System.out.println("                --DecisionTree or -D              Option allowing to use a Decision Tree to predict lineages from spoligotypes. Default: false");
 	      System.out.println("                --EvolutionAlgo or -E              Option allowing to use an Evolutionary Algorithm (EA) to predict lineages from spoligotypes. Default: false");
+	      System.out.println("                --pathToDTfiles or -pDT              Option allowing to indicate the path to Decision Tree files (e.g. C:/Users/dcouvin/workspace/)");
+	      System.out.println("                --pathToEAfiles or -pEA              Option allowing to indicate the path to Evolutionary Algorithm's Binary Mask folder (e.g. C:/Users/dcouvin/Documents/IPG_WORK/Bioinformatics_tools/C/Binary_Mask2/)");
 	      System.out.println("                --curatedClade or -cur             Option allowing to print curated Clade information obtained from SITVIT2 database. Default: false");
 	      System.out.println("                --SNPlineage or -S              Option allowing to print corresponding lineage according to Single Nucleotide Polymorphism (SNP) barcode. Default: false");
 	      System.out.println("                --useRuleTB or -uR          Option allowing to use refined rules of RuleTB when MIRU-VNTR field is filled. Default: false");
 	      System.out.println("                --SIT or -sit             Option allowing to print corresponding Spoligotype International Type (SIT) according to SITVIT2 in the output file. Default: false");  
 	      System.out.println("                --country or -c             Option allowing to print country distribution according to SITVIT2 in the output file. Default: false");
-	      System.out.println("                --all or -a              Option allowing to activate all boolean options (i.e. -cur, -c, -sit, -uR, -S, -B, -D, -E. Default: false");
+	      System.out.println("                --all or -a              Option allowing to activate most boolean options (i.e. -cur, -c, -sit, -uR, -S, -B. Default: false");
 	      System.out.println("                --quiet or -q              Option allowing to run the program silently");
 	      System.out.println();
 	      System.out.println("Help/Version:");
@@ -245,7 +270,8 @@ public class SpolLineage {
 	      System.out.println("          java -jar spollineages.jar -delim tab -i inputFile.tsv -o outputFile.tsv");
 	      System.out.println("          java -jar spollineages.jar -delim tab -i inputFile.tsv -o outputFile.xls");
 	      System.out.println("          java -jar spollineages.jar -delim , -i inputFile.csv -o outputFile.csv -a");
-	      System.out.println("          java -jar spollineages.jar -delim ; -D -uR -sit -i inputFile.csv -o outputFile.csv");
+	      System.out.println("          java -jar spollineages.jar -delim ; -D -pDT C:/Users/dcouvin/workspace/ -uR -sit -i inputFile.csv -o outputFile.csv");
+	      System.out.println("          java -jar spollineages.jar -delim ; -E -pEA C:/Users/dcouvin/Documents/IPG_WORK/Bioinformatics_tools/C/Binary_Mask2/ -i inputFile.csv -o outputFile.csv");
 	      System.out.println("          java -jar spollineages.jar -h");
 	      System.out.println("          java -jar spollineages.jar -v");
 	      System.out.println();

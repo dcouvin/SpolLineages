@@ -25,14 +25,19 @@ public class CSVReader {
 	FileWriter csvWriter;
 	String delimiter = ";";
 	boolean [] tabBool = new boolean[10];
+	ArrayList<String> spoligoList = new ArrayList<String>();
+	String pathToDTfiles = "";
+	String pathToEAfiles = "";
 	
 	//Constructor
-	public CSVReader(String file, String output, String del, boolean [] tab)
+	public CSVReader(String file, String output, String del, boolean [] tab, String pathToDT, String pathToEA)
 	{
 		fileName = file;
 		outputFile = output;
 		delimiter = del;
 		tabBool = tab;
+		pathToDTfiles = pathToDT;
+		pathToEAfiles = pathToEA;
 	}
 	
 	
@@ -84,12 +89,53 @@ public class CSVReader {
 			while ((line = br.readLine()) != null) {
 				if(!line.isEmpty() || line.length() != 0){
 				    records.add(line.toString());
+					if(!line.toString().startsWith("#")){
+						String[] valuesDTEA = line.toString().split(delimiter); 
+						String tmpSpol = "";
+						
+						if(valuesDTEA[1].length() == 15){
+							//Spoligo is octal
+							tmpSpol = valuesDTEA[1];
+							tmpSpol=Spoligotype43.octToBin(tmpSpol);
+							tmpSpol = tmpSpol.replace("n", "1").replaceAll("o", "0");
+						}
+						else if(valuesDTEA[1].length() == 43){
+							if(valuesDTEA[1].contains("n") || valuesDTEA[1].contains("o")){
+								
+								tmpSpol = valuesDTEA[1].replace("n", "1").replaceAll("o", "0");
+							}
+							else if(tabBool[1] == true && valuesDTEA[1].contains(".")){
+								tmpSpol = valuesDTEA[1].replace("n", "1").replaceAll("o", "0");
+								tmpSpol = tmpSpol.replace(".", "1");
+							}
+							else{
+								tmpSpol = valuesDTEA[1];
+							}
+							
+						}
+						
+						spoligoList.add(tmpSpol);
+					
+					}
 				    //Quiet?
 					//if(tabBool[8] == false){
 						//System.out.println("Line: "+line.toString());
 					//}
 				}
 			}
+			
+			//Decision tree and Evolutionary algo
+			HashMap<String,String> myHDT = new HashMap<String,String>();
+			HashMap<String,String> myHEA = new HashMap<String,String>();
+			
+			if(tabBool[1] == true){
+				myHDT = DecisionTree.getLineageDTEAMask(spoligoList,pathToDTfiles);
+			}
+			
+			if(tabBool[2] == true){
+				myHEA = BinaryMask.getLineageEAMask(spoligoList,pathToEAfiles);
+			}
+			
 			for (String str:records) {
 				if(!str.startsWith("#")){
 					String[] values = str.split(delimiter); // "\t" replaced by ";"
@@ -146,6 +192,8 @@ public class CSVReader {
 						//Get Lineage/SubLineage and SNP-based lineage
 						String subLineage = "ND";
 						String lineage = "ND";
+						String lineageDT = "ND";
+						String lineageEA = "ND";
 						String snpLineage = "ND";
 						String sit = "ND";
 						String cladeExpert = "ND";
@@ -205,6 +253,31 @@ public class CSVReader {
 							tabBool[4] = false; //deactivate SNP lineage (when no Binary search) 
 						}
 						//End binary rules
+						
+						String spolBinaryDTEA = spoligoBinary;
+	        			
+	        			spolBinaryDTEA=spolBinaryDTEA.replace("n","1");
+	        			spolBinaryDTEA=spolBinaryDTEA.replace("o","0");
+						
+						//Begin Decision tree tabBool[1]
+						if(tabBool[1] == true){
+							//myHDT = DecisionTree.getLineageDTEAMask(spoligoList);
+							if(spolBinaryDTEA.contains(".")){
+								
+								spolBinaryDTEA = spolBinaryDTEA.replace(".", "1");
+								System.out.println("SpolDTEA= "+spolBinaryDTEA);
+							}
+							lineageDT = myHDT.get(spolBinaryDTEA);
+						}
+						//End Decision tree
+						
+	        			//Begin Genetic algorithm tabBool[2]
+	        			if(tabBool[2] == true){
+	        				//myHEA = BinaryMask.getLineageEAMask(spoligoList);
+	        				lineageEA = myHEA.get(spolBinaryDTEA);
+	        			}
+						//End Genetic algorithm
+						
 						
 						//Begin SNP
 						if(tabBool[4] == true){
@@ -274,9 +347,9 @@ public class CSVReader {
 						csvWriter.append(delimiter);
 						csvWriter.append(candidateLineages.toString().replace(",",""));   // candidate Lineages
 						csvWriter.append(delimiter);
-						csvWriter.append("ND");   // Lineage based on decision tree algorithm
+						csvWriter.append(lineageDT);   // Lineage based on decision tree algorithm
 						csvWriter.append(delimiter);
-						csvWriter.append("ND");   // Lineage based on genetic algorithm
+						csvWriter.append(lineageEA);   // Lineage based on genetic algorithm
 						csvWriter.append(delimiter);
 						csvWriter.append(cladeExpert);   // Expert Clade/Curated (SITVIT2)
 						csvWriter.append(delimiter);
