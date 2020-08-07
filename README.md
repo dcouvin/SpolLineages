@@ -20,7 +20,20 @@ java -jar spollineages.jar -h
 ```bash
 java -jar spollineages.jar -v
 ```
+-before running the evolutionary algorithm (binary mask) prediction, the following commands must be typed:
+```bash
+cd Binary_Mask2
+gcc Mask2.c -o Mask2
+```
 -run a simple analysis with the provided example (CSV file separated by semicolons)
 ```bash
 java -jar spollineages.jar -i example.csv -o result_example.csv
 ```
+-run an example using decision tree or evolutionary algorithm (binary mask) predictions:
+```bash
+java -jar spollineages.jar -i example2.csv -o result_DT.csv -D -pDT C:/Users/dcouvin/workspace/SpolLineages/Decision_Tree/
+java -jar spollineages.jar -i example2.csv -o result_EA.csv -E -pEA C:/Users/dcouvin/workspace/SpolLineages/Binary_Mask2/
+```
+
+
+
