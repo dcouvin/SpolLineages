@@ -25,6 +25,11 @@ java -jar spollineages.jar -v
 cd Binary_Mask2
 gcc Mask2.c -o Mask2
 ```
+-Then the Binary Mask folder and Mask2 file should be exported to $PATH (for Unix users) as follows:
+```bash
+export PATH="/home/administrateur/results/David/SpolLineages/Binary_Mask2/Mask2:$PATH"
+export PATH="/home/administrateur/results/David/SpolLineages/Binary_Mask2/Mask2:$PATH"
+```
 -run a simple analysis with the provided example (CSV file separated by semicolons)
 ```bash
 java -jar spollineages.jar -i example.csv -o result_example.csv
@@ -34,6 +39,3 @@ java -jar spollineages.jar -i example.csv -o result_example.csv
 java -jar spollineages.jar -i example2.csv -o result_DT.csv -D -pDT C:/Users/dcouvin/workspace/SpolLineages/Decision_Tree/
 java -jar spollineages.jar -i example2.csv -o result_EA.csv -E -pEA C:/Users/dcouvin/workspace/SpolLineages/Binary_Mask2/
 ```
-- Please note that for the moment, the evolutionary algorithm (binary mask) prediction worked on a windows 7 system.
-
-
