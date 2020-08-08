@@ -20,7 +20,7 @@ java -jar spollineages.jar -h
 ```bash
 java -jar spollineages.jar -v
 ```
--before running the evolutionary algorithm (binary mask) prediction, the following commands must be typed:
+-before running the evolutionary algorithm (binary mask) prediction, the following commands must be typed (when using Windows, users can install [MinGW](http://www.mingw.org/) or [Cygwin](https://www.cygwin.com/) in order to use the gcc command):
 ```bash
 cd Binary_Mask2
 gcc Mask2.c -o Mask2
