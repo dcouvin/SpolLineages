@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
+Sealed: true
 Main-Class: SpolLineage
 Class-Path: src/lib/weka-3.7.0.jar
