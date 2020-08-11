@@ -23,8 +23,21 @@ java -jar spollineages.jar -v
 -before running the evolutionary algorithm (binary mask) prediction, the following commands must be typed (when using Windows, users can install [MinGW](http://www.mingw.org/) or [Cygwin](https://www.cygwin.com/) in order to use the gcc command):
 ```bash
 cd Binary_Mask2
+```
+(when using Unix)
+```bash
 gcc Mask2.c -o Mask2
 ```
+(when using Windows)
+```bash
+gcc Mask2.c -o Mask2.exe
+```
+or
+```bash
+cd C:\MINGW\bin
+gcc.exe path\to\Binary_Mask2\Mask2.c -o path\to\Binary_Mask2\Mask2.exe
+```
+
 -Then the Binary Mask folder and Mask2 file should be exported to $PATH (for Unix users) as follows:
 ```bash
 export PATH="/path/to/SpolLineages/Binary_Mask2/Mask2:$PATH"
