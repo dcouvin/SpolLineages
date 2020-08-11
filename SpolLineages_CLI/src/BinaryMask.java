@@ -1,5 +1,9 @@
 
 
+import java.io.BufferedReader;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,7 +27,7 @@ public class BinaryMask {
 		 }
 		
 		//BinaryMask calling
-		/* Récupération de l'environnement d'exécution */
+		/* RÃ©cupÃ©ration de l'environnement d'exÃ©cution */
 		Runtime runtime = Runtime.getRuntime();
 		
 		final String dossierInstallation = pathToEA.toString();  
@@ -34,7 +38,7 @@ public class BinaryMask {
 		try {
 			
 			//int nbBasic = 0;
-			/* Création et lancement de processus qui fait le ping */
+			/* CrÃ©ation et lancement de processus qui fait le ping */
 			//  C:/Users/dcouvin/Documents/IPG_WORK/Bioinformatics_tools/C/
 			//Process process = runtime.exec("cmd /c "+"dir ");
 			
@@ -75,31 +79,69 @@ public class BinaryMask {
 	            //nbBasic++;
 				 }//end for
 			}
-			else{
+			else {
+				//System.out.println("SpolMask tab size: "+ spolMaskLines.size());
 				for (String spolMask2 : spolMaskLines) 
 				 {
-				Process process2 = runtime.exec(dossierInstallation+"Mask2 " +dossierInstallation+"bestIndiv "+ spolMask2);
-				System.out.println("SpolMask: "+spolMask2);
-				//System.out.println("transformedSpol: "+transformDTEAmaskSpolToBasic(spolMask));
-		
-				// any error message?
-	            StreamGobbler errorGobbler2 = new 
-	                StreamGobbler(process2.getErrorStream(), "ERROR");            
+				//Process process2 = runtime.exec(dossierInstallation+"Mask2 " +dossierInstallation+"bestIndiv "+ spolMask2);
+					ProcessBuilder processBuilder = new ProcessBuilder();
+
+					// -- Linux --
+
+					// Run a shell command
+					processBuilder.command("bash", "-c", " "+dossierInstallation+"Mask2 " +" " +dossierInstallation+"bestIndiv "+" " + spolMask2);
+					//processBuilder.command("bash", "-c", "Mask2 " +dossierInstallation+"bestIndiv "+ spolMask2);
+					
+					
+					// Run a shell script
+					//processBuilder.command("path/to/hello.sh");
+
+					// -- Windows --
+
+					// Run a command
+					//processBuilder.command("cmd.exe", "/c", "dir C:\\Users\\mkyong");
+
+					// Run a bat file
+					//processBuilder.command("C:\\Users\\mkyong\\hello.bat");
+					//Process p;
+					try {
+
+						Process process = processBuilder.start();
+						//p = Runtime.getRuntime().exec("ls -aF");
+
+						StringBuilder output = new StringBuilder();
+
+						BufferedReader reader = new BufferedReader(
+								new InputStreamReader(process.getInputStream()));
+
+						String line;
+						while ((line = reader.readLine()) != null) {
+							output.append(line);
+						}
+
+						int exitVal = process.waitFor();
+						System.out.println("Exit: "+exitVal);
+						if (exitVal == 0) {
+							//System.out.println("Success!");
+							//System.out.println(output);
+							
+							
+							//String maskLineage2 = outp;  
+				            System.out.println("MaskLineage: "+output);
+				            mySpolMask.put(DecisionTree.transformDTEAmaskSpolToBasic(spolMask2), output.toString());
+				            //System.exit(0);
+							
+						} else {
+							//abnormal...
+						}
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}     
 	            
-	            // any output?
-	            StreamGobbler outputGobbler2 = new 
-	                StreamGobbler(process2.getInputStream(), "OUTPUT");
-	                
-	            // kick them off
-	            errorGobbler2.start();
-	            outputGobbler2.start();
-	            // any error???
-	            int exitVal2 = process2.waitFor();
-	            System.out.println("ExitValue: " + exitVal2);     
 	            
-	            String maskLineage2 = outputGobbler2.getLineage();  
-	            System.out.println("MaskLineage: "+maskLineage2);
-	            mySpolMask.put(DecisionTree.transformDTEAmaskSpolToBasic(spolMask2), maskLineage2.toString());
 	            
 	            //nbBasic++;
 			}// end for
