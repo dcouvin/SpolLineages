@@ -130,6 +130,7 @@ public class DecisionTree {
 				//sep = sep.replace("0","1");
 				//for(int k = 0; k < part2.length(); k++){
 					//sep.charAt(k)
+					currentSpol = currentSpol.replace(".", "\"?\",");
 					currentSpol = currentSpol.replace("0", "\"0\",").replaceAll("1", "\"1\",");                 //("\""+part2.charAt(k)+"\""+(k!=42?",":",\"?\""));
 					currentSpol = currentSpol+"\"?\"\n";
 					//System.out.println(sep.charAt(k));
@@ -176,7 +177,7 @@ public class DecisionTree {
 			}
 			catch (IOException e)
 			{
-			 //Gestion des exceptions en cas de problème d'accès au fichier
+			 //Gestion des exceptions en cas de problÃ¨me d'accÃ¨s au fichier
 			}
 			//Data test
 			Instances dataTest = new DataSource(racine+"A_DATASET_TEST_1.csv").getDataSet();
