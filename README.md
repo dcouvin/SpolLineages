@@ -56,3 +56,8 @@ java -jar spollineages.jar -i example2.csv -o result_EA.csv -E -pEA C:/Users/dco
 ```bash
 java -jar spollineages.jar -i example2.csv -o result_DT.csv -D -pDT C:/Users/dcouvin/workspace/SpolLineages/Decision_Tree/ -E -pEA C:/Users/dcouvin/workspace/SpolLineages/Binary_Mask2/ -a
 ```
+
+## Citation
+If you use SpolLineages in your work, please cite:
+
+Couvin D, Segretier W, Stattner E, Rastogi N. Novel methods included in SpolLineages tool for fast and precise prediction of Mycobacterium tuberculosis complex spoligotype families. Database (Oxford). 2020 Dec 15;2020:baaa108. [https://doi.org/10.1093/database/baaa108](https://doi.org/10.1093/database/baaa108) PMID: 33320180
