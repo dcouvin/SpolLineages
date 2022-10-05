@@ -25,6 +25,7 @@ parser.add_argument("-i", "--input", metavar="csvfile", help="Input csv file", t
 parser.add_argument("-m", "--model", metavar="modeloption",
                     help="choose your option (ex: dt, svm, nn, nb, svm_reg, rf, et, ab, knn, ao)", type=str)
 parser.add_argument("-e", "--estimators", metavar="estimators ", help="choose a value (10 by default)", default=10, type=int)
+parser.add_argument("-k", "--kneighbors", metavar="kneighbors ", help="choose a value (3 by default)", default=3, type=int)
 parser.add_argument("-o", "--output", help="Directs the output to a name of your choice", type=str)
 parser.add_argument("-a", "--all", action='store_true', help="All model")
 
@@ -34,6 +35,7 @@ model_option = args.model
 output = args.output
 
 model_estimator = args.estimators
+model_kneighbors = args.kneighbors
 
 tb_data = pd.read_csv(in_file)
 
@@ -292,7 +294,7 @@ with report as f:
 
     # knn
     elif model_option == "knn":
-        clf = KNeighborsClassifier(n_neighbors=3)
+        clf = KNeighborsClassifier(n_neighbors=model_kneighbors)
         clf.fit(X, y)
         predictions = clf.predict(X_test)
         knn_prediction = clf.predict(tab)
@@ -465,7 +467,7 @@ with report as f:
 
         # knn
         debut_knn = time.perf_counter()
-        clf = KNeighborsClassifier(n_neighbors=3)
+        clf = KNeighborsClassifier(n_neighbors=model_kneighbors)
         clf.fit(X, y)
         predictions = clf.predict(X_test)
         knn_prediction = clf.predict(tab)
