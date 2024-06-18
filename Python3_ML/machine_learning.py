@@ -24,6 +24,12 @@ parser = argparse.ArgumentParser(description="Prediction from csv file.")
 parser.add_argument("-i", "--input", metavar="csvfile", help="Input csv file", type=str)
 parser.add_argument("-m", "--model", metavar="modeloption",
                     help="choose your option (ex: dt, svm, nn, nb, svm_reg, rf, et, ab, knn, ao)", type=str)
+parser.add_argument("-d", "--delimiter", metavar="delimiter",
+                    help="choose your CSV files's delimiter (ex: ',', ';', '\t', ...)", type=str)
+parser.add_argument("-r", "--remove", metavar="remove",
+                    help="remove CSV files's columns for prediction (ex: 'ID','Type','Country',...)", type=str)
+parser.add_argument("-c", "--class", metavar="class",
+                    help="Class used for prediction (ex: 'Type')", type=str)
 parser.add_argument("-e", "--estimators", metavar="estimators ", help="choose a value (10 by default)", default=10, type=int)
 parser.add_argument("-k", "--kneighbors", metavar="kneighbors ", help="choose a value (3 by default)", default=3, type=int)
 parser.add_argument("-o", "--output", help="Directs the output to a name of your choice", type=str)
@@ -33,16 +39,18 @@ args = parser.parse_args()
 in_file = args.input
 model_option = args.model
 output = args.output
-
+delim = args.delimiter
+remove = args.remove
+cl = args.class
 model_estimator = args.estimators
 model_kneighbors = args.kneighbors
 
-tb_data = pd.read_csv(in_file)
+tb_data = pd.read_csv(in_file, delimiter=delim)
 
 
 # tb_data = pd.read_csv('tb_file.csv')
-X = tb_data.drop(columns=['ID', 'Type', 'Country'])
-y = tb_data['Type']
+X = tb_data.drop(columns=[remove]) #Type = Lineage ; Country = Family
+y = tb_data[cl] # Lineage / Family
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 # test table for prediction
@@ -52,6 +60,9 @@ tab = [
                       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
      0, 0, 1, 1, 1]]
+#tab = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 1],
+ #            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 1],
+  #           [7, 7, 3, 7, 7, 7, 0, 3, 1, 1, 1, 0, 0, 0, 1]]
 
 # sys.stdout = open(output, "w")
 # header = "Name\Age\BirthYear"
@@ -63,36 +74,33 @@ with report as f:
     if model_option == "dt":
         model_option = DecisionTreeClassifier()
         model_option.fit(X_train, y_train)
-        tree.export_graphviz(model_option, out_file='graph.dot',
-                             feature_names=['var1', 'var2', 'var3', 'var4', 'var5', 'var6', 'var7', 'var8', 'var9',
-                                            'var10',
-                                            'var11', 'var12', 'var13', 'var14', 'var15', 'var16', 'var17', 'var18',
-                                            'var19',
-                                            'var20',
-                                            'var21', 'var22', 'var23', 'var24', 'var25', 'var26', 'var27', 'var28',
-                                            'var29',
-                                            'var30',
-                                            'var31', 'var32', 'var33', 'var34', 'var35', 'var36', 'var37', 'var38',
-                                            'var39',
-                                            'var40',
-                                            'var41', 'var42', 'var43'],
-                             class_names=sorted(y.unique()),
-                             label='all',
-                             rounded=True,
-                             filled=True)
+        #tree.export_graphviz(model_option, out_file='graph.dot',
+         #                    feature_names=['var1', 'var2', 'var3', 'var4', 'var5', 'var6', 'var7', 'var8', 'var9',
+          #                                  'var10',
+           #                                 'var11', 'var12', 'var13', 'var14', 'var15', 'var16', 'var17', 'var18',
+            #                                'var19',
+             #                               'var20',
+              #                              'var21', 'var22', 'var23', 'var24', 'var25', 'var26', 'var27', 'var28',
+               #                             'var29',
+                #                            'var30',
+                 #                           'var31', 'var32', 'var33', 'var34', 'var35', 'var36', 'var37', 'var38',
+                  #                          'var39',
+                   #                         'var40',
+                    #                        'var41', 'var42', 'var43'],
+                     #        class_names=sorted(y.unique()),
+                      #       label='all',
+                       #      rounded=True,
+                        #     filled=True)
         predictions = model_option.predict(X_test)
-        prediction2 = model_option.predict(
-            [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
-             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]])
+        #prediction2 = model_option.predict(
+         #  [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 1],
+          #   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 1],
+           #  [7, 7, 3, 7, 7, 7, 0, 3, 1, 1, 1, 0, 0, 0, 1]])
 
         score_dt = accuracy_score(y_test, predictions)
         fin_dt = time.perf_counter()
         print("Prediction of X_test: ", predictions)
-        print("Prediction of 2 spoligo: ", prediction2)
+       # print("Prediction of some spoligos: ", prediction2)
         print("dt score :")
         print(score_dt)
         df = pd.DataFrame([('Score', score_dt),
@@ -107,23 +115,20 @@ with report as f:
     elif model_option == "svm":
         # X = [[0, 0], [1, 1]]
         # y = [0, 1]
-        X = tb_data.drop(columns=['ID', 'Type', 'Country'])
-        y = tb_data['Type']
+        #X = tb_data.drop(columns=['ID', 'Lineage', 'Family'])
+        #y = tb_data['Family']
         clf = svm.SVC()
         clf.fit(X, y)
         # SVC()
 
         predictions = clf.predict(X_test)
-        svm_prediction = clf.predict(
-            [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
-             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]])
+        #svm_prediction = clf.predict(
+         #   [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 1],
+          #   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 1],
+           #  [7, 7, 3, 7, 7, 7, 0, 3, 1, 1, 1, 0, 0, 0, 1]])
         score_svm = accuracy_score(y_test, predictions)
         fin_svm = time.perf_counter()
-        print("Prediction of 2 spoligo with svm: ", svm_prediction)
+        #print("Prediction of some spoligo with svm: ", svm_prediction)
         print("svm score :")
         print(score_svm)
         df = pd.DataFrame([('Score', score_svm),
@@ -137,22 +142,25 @@ with report as f:
     elif model_option == "nn":
         # X = [[0, 0], [1, 1]]
         # y = [0, 1]
-        X = tb_data.drop(columns=['ID', 'Type', 'Country'])
-        y = tb_data['Type']
+        #X = tb_data.drop(columns=['ID', 'Lineage', 'Family'])
+        #y = tb_data['Family']
         clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1)
         clf.fit(X, y)
         # MLPClassifier(alpha=1e-05, hidden_layer_sizes=(5, 2), random_state=1,solver='lbfgs')
         predictions = clf.predict(X_test)
-        nn_prediction = clf.predict(
-            [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
-             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]])
+        #nn_prediction = clf.predict(
+            #[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            #  0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+            # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            #  0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
+            # [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+            #  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]])
+            #[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 1],
+            # [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 1],
+            # [7, 7, 3, 7, 7, 7, 0, 3, 1, 1, 1, 0, 0, 0, 1]])
         score_nn = accuracy_score(y_test, predictions)
         fin_nn = time.perf_counter()
-        print("Prediction of 2 spoligo with nn: ", nn_prediction)
+        #print("Prediction of 2 spoligo with nn: ", nn_prediction)
         print("nn score :")
         print(score_nn)
         df = pd.DataFrame([('Score', score_nn),
@@ -165,8 +173,8 @@ with report as f:
     # nb
     elif model_option == "nb":
         # X, y = load_iris(return_X_y=True)
-        X = tb_data.drop(columns=['ID', 'Type', 'Country'])
-        y = tb_data['Type']
+        #X = tb_data.drop(columns=['ID', 'Lineage', 'Family'])
+        #y = tb_data['Family']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=0)
         gnb = GaussianNB()
         y_pred = gnb.fit(X_train, y_train).predict(X_test)
@@ -184,17 +192,20 @@ with report as f:
 
     # ne
     elif model_option == "ne":
-        X = np.array(
-            [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 1, 1, 1, 1, 1, 1, 1],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 1, 0, 1, 0, 1, 1, 1],
-             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 1, 1, 1]])
+        #X = np.array(
+           # [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           #   0, 0, 1, 1, 1, 1, 1, 1, 1],
+           #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           #   0, 0, 1, 0, 1, 0, 1, 1, 1],
+           #  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           #   0, 0, 0, 0, 0, 0, 1, 1, 1]])
+         #   [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 1],
+          #   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 1],
+           #  [7, 7, 3, 7, 7, 7, 0, 3, 1, 1, 1, 0, 0, 0, 1]])
         nbrs = NearestNeighbors(n_neighbors=2, algorithm='ball_tree').fit(X)
         distances, indices = nbrs.kneighbors(X)
         fin_ne = time.perf_counter()
-        print("Prediction of 2distances ", distances)
+        #print("Prediction of 2distances ", distances)
         print("Prediction of indice ", indices)
         df = pd.DataFrame([('Score', nbrs),
                            ('Temp(s)', f'{fin_ne - debut:0.4}')],
@@ -206,22 +217,25 @@ with report as f:
 
     # svm_reg (not in oa model)
     elif model_option == "svm_reg":
-        X = tb_data.drop(columns=['ID', 'Type', 'Country'])
-        y = tb_data['Type']
+        #X = tb_data.drop(columns=['ID', 'Lineage', 'Family'])
+        #y = tb_data['Family']
         regr = svm.SVR()
         regr.fit(X, y)
         regr.predict(X_test)
         predictions = clf.predict(X_test)
-        svm_prediction = clf.predict(
-            [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
-             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]])
+        #svm_prediction = clf.predict(
+           # [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           #   0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+           #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           #   0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
+           #  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0,
+           #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]])
+           # [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 1],
+           #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 1],
+           #  [7, 7, 3, 7, 7, 7, 0, 3, 1, 1, 1, 0, 0, 0, 1]])
         score_svm_reg = accuracy_score(y_test, predictions)
         fin_svm_reg = time.perf_counter()
-        print("Prediction of 2 spoligo with svm: ", svm_prediction)
+        #print("Prediction of 2 spoligo with svm: ", svm_prediction)
         print("svm score :")
         print(score_svm_reg)
         df = pd.DataFrame([('Score', score_svm_reg),
@@ -242,10 +256,10 @@ with report as f:
         clf.fit(X, y)
         # SVC()
         predictions = clf.predict(X_test)
-        rf_prediction = clf.predict(tab)
+        #rf_prediction = clf.predict(tab)
         score_rf = accuracy_score(y_test, predictions)
         fin_rf = time.perf_counter()
-        print("Prediction of 2 spoligo with rf: ", rf_prediction)
+        #print("Prediction of 2 spoligo with rf: ", rf_prediction)
         print(score_rf)
         df = pd.DataFrame([('Score', score_rf),
                            ('Temp(s)', f'{fin_rf - debut:0.4}')],
@@ -260,10 +274,10 @@ with report as f:
         clf = ExtraTreesClassifier(n_estimators=model_estimator)
         clf.fit(X, y)
         predictions = clf.predict(X_test)
-        rf_prediction = clf.predict(tab)
+        #rf_prediction = clf.predict(tab)
         score_et = accuracy_score(y_test, predictions)
         fin_et = time.perf_counter()
-        print("Prediction of 2 spoligo with rf: ", rf_prediction)
+        #print("Prediction of 2 spoligo with rf: ", rf_prediction)
         print(score_et)
         df = pd.DataFrame([('Score', score_et),
                            ('Temp(s)', f'{fin_et - debut:0.4}')],
@@ -280,10 +294,10 @@ with report as f:
         clf = AdaBoostClassifier(n_estimators=model_estimator)
         clf.fit(X, y)
         predictions = clf.predict(X_test)
-        ab_prediction = clf.predict(tab)
+        #ab_prediction = clf.predict(tab)
         score_ab = accuracy_score(y_test, predictions)
         fin_ab = time.perf_counter()
-        print("Prediction of 2 spoligo with rf: ", ab_prediction)
+        #print("Prediction of 2 spoligo with rf: ", ab_prediction)
         print(score_ab)
         df = pd.DataFrame([('Score', score_ab),
                            ('Temp(s)', f'{fin_ab - debut:0.4}')],
@@ -297,10 +311,10 @@ with report as f:
         clf = KNeighborsClassifier(n_neighbors=model_kneighbors)
         clf.fit(X, y)
         predictions = clf.predict(X_test)
-        knn_prediction = clf.predict(tab)
+        #knn_prediction = clf.predict(tab)
         score_knn = accuracy_score(y_test, predictions)
         fin_knn = time.perf_counter()
-        print("Prediction of 2 spoligo with knn: ", knn_prediction)
+        #print("Prediction of 2 spoligo with knn: ", knn_prediction)
         print(score_knn)
         df = pd.DataFrame([('Score', score_knn),
                            ('Temp(s)', f'{fin_knn - debut:0.4}')],
@@ -333,12 +347,15 @@ with report as f:
                              filled=True)
         predictions = model_option.predict(X_test)
         prediction2 = model_option.predict(
-            [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
-             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]])
+           # [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+           #  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+           #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1],
+           #  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+           #   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]])
+           [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 1],
+             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 1],
+             [7, 7, 3, 7, 7, 7, 0, 3, 1, 1, 1, 0, 0, 0, 1]])
 
         score_dt = accuracy_score(y_test, predictions)
         fin_dt = time.perf_counter()
