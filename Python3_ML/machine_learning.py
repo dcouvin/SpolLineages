@@ -292,7 +292,7 @@ with report as f:
     # ab
     elif model_option == "ab":
         # clf = AdaBoostClassifier(n_estimators=100)
-        clf = AdaBoostClassifier(n_estimators=model_estimator)
+        clf = AdaBoostClassifier(n_estimators=model_estimator, algorithm="SAMME")
         clf.fit(X, y)
         predictions = clf.predict(X_test)
         #ab_prediction = clf.predict(tab)
@@ -427,7 +427,7 @@ with report as f:
 
         # ab
         debut_ab = time.perf_counter()
-        clf = AdaBoostClassifier(n_estimators=model_estimator)
+        clf = AdaBoostClassifier(n_estimators=model_estimator, algorithm="SAMME")
         clf.fit(X, y)
         predictions = clf.predict(X_test)
         #ab_prediction = clf.predict(tab)
