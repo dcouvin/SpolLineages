@@ -50,7 +50,7 @@ tb_data = pd.read_csv(in_file, delimiter=delim, engine='python')
 tb_data = tb_data.dropna()
 
 # tb_data = pd.read_csv('tb_file.csv')
-X = tb_data.drop(columns=[remove]) #Type = Lineage ; Country = Family
+X = tb_data.drop(columns=np.array(list)) #Type = Lineage ; Country = Family
 y = tb_data[cl] # Lineage / Family
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
